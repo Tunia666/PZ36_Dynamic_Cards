@@ -5,20 +5,55 @@ const input = document.querySelector("#card-input");
 const list = document.querySelector("#card-list");
 const status = document.querySelector("#card-status");
 
+function updateCounter() {
+  const counterElement = document.querySelector("#card-counter");
+  if (counterElement) {
+    const totalCards = list.querySelectorAll(".item-card").length;
+    counterElement.textContent = `Количество карточек: ${totalCards}`;
+  }
+}
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+
   const title = input.value.trim();
+
   if (title === "") { status.textContent = "Введите название карточки."; return; }
-  // Задание 1. Создайте li с помощью document.createElement().
-  // Добавьте класс item-card и атрибут data-card.
-  // Задание 2. Создайте span с классом item-title и button с классом remove-card.
-  // Запишите текст безопасно через textContent, добавьте дочерние элементы и list.append().
-  // Очистите поле input и обновите status.
+
+  const li = document.createElement("li");
+  li.className = "item-card";
+  li.setAttribute("data-card", "");
+
+  const span = document.createElement("span");
+  span.className = "item-title";
+  span.textContent = title;
+
+  const button = document.createElement("button");
+  button.className = "remove-card";
+
+  li.append(span);
+  li.append(button);
+  list.append(li);
+
+  input.value = "";
+  status.textContent = "";
+  updateCounter();
 });
 
-// Задание 3. Назначьте ОДИН обработчик click на list (делегирование).
-// Через event.target.closest(".remove-card") найдите кнопку удаления.
-// Если кнопка есть, удалите её ближайшую .item-card и завершите обработчик.
+list.addEventListener("click", (event) => {
+  const deleteButton = event.target.closest(".remove-card");
 
-// Задание 4. Если кликнули не по кнопке удаления,
-// найдите event.target.closest(".item-card") и переключите is-active.
+  if (deleteButton) {
+    const card = event.target.closest(".item-card");
+    if (card) {
+      card.remove();
+      updateCounter();
+    }
+    return;
+  }
+
+  const card = event.target.closest(".item-card");
+  if (card) {
+    card.classList.toggle("is-active");
+  }
+});
