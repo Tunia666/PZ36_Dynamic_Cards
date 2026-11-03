@@ -4,21 +4,45 @@ const form = document.querySelector("#card-form");
 const input = document.querySelector("#card-input");
 const list = document.querySelector("#card-list");
 const status = document.querySelector("#card-status");
-
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const title = input.value.trim();
-  if (title === "") { status.textContent = "Введите название карточки."; return; }
-  // Задание 1. Создайте li с помощью document.createElement().
-  // Добавьте класс item-card и атрибут data-card.
-  // Задание 2. Создайте span с классом item-title и button с классом remove-card.
-  // Запишите текст безопасно через textContent, добавьте дочерние элементы и list.append().
-  // Очистите поле input и обновите status.
+  if (title === "") {
+    status.textContent = "Введите название карточки.";
+    return;
+  }
+  const li = document.createElement("li");
+  li.classList.add("item-card");
+  li.setAttribute("data-card", "");
+  const span = document.createElement("span");
+  span.classList.add("item-title");
+  span.textContent = title;
+  const button = document.createElement("button");
+  button.classList.add("remove-card");
+  button.textContent = "X"; 
+  li.append(span, button);
+  list.append(li);
+  input.value = "";
+  status.textContent = "Карточка успешно добавлена.";
 });
-
-// Задание 3. Назначьте ОДИН обработчик click на list (делегирование).
-// Через event.target.closest(".remove-card") найдите кнопку удаления.
-// Если кнопка есть, удалите её ближайшую .item-card и завершите обработчик.
-
-// Задание 4. Если кликнули не по кнопке удаления,
-// найдите event.target.closest(".item-card") и переключите is-active.
+list.addEventListener("click", (event) => {
+  const removeBtn = event.target.closest(".remove-card");
+  if (removeBtn) {
+    const card = removeBtn.closest(".item-card");
+    if (card) {
+      card.remove();
+      status.textContent = "Карточка успешно удалена."; 
+    }
+    return;
+  }
+  const card = event.target.closest(".item-card");
+  if (card) {
+    card.classList.toggle("is-active");
+  
+    if (card.classList.contains("is-active")) {
+      status.textContent = "Карточка выделена.";
+    } else {
+      status.textContent = "Выделение снято.";
+    }
+  }
+});
