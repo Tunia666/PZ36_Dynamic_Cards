@@ -1,24 +1,56 @@
-"use strict";
+const cardForm = document.querySelector("#card-form");
+const cardInput = document.querySelector("#card-input");
+const cardList = document.querySelector("#card-list");
+const cardStatus = document.querySelector("#card-status");
 
-const form = document.querySelector("#card-form");
-const input = document.querySelector("#card-input");
-const list = document.querySelector("#card-list");
-const status = document.querySelector("#card-status");
-
-form.addEventListener("submit", (event) => {
+cardForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  const title = input.value.trim();
-  if (title === "") { status.textContent = "Введите название карточки."; return; }
-  // Задание 1. Создайте li с помощью document.createElement().
-  // Добавьте класс item-card и атрибут data-card.
-  // Задание 2. Создайте span с классом item-title и button с классом remove-card.
-  // Запишите текст безопасно через textContent, добавьте дочерние элементы и list.append().
-  // Очистите поле input и обновите status.
+
+  const titleText = cardInput.value.trim();
+  if (titleText === "") {
+    cardStatus.textContent = "Введите название карточки.";
+    return;
+  }
+
+  const li = document.createElement("li");
+  li.className = "item-card";
+  li.setAttribute("data-card", "");
+
+  const span = document.createElement("span");
+  span.className = "item-title";
+  span.textContent = titleText;
+
+  const removeBtn = document.createElement("button");
+  removeBtn.className = "remove-card";
+  removeBtn.type = "button";
+  removeBtn.setAttribute("aria-label", "Удалить карточку");
+  removeBtn.textContent = "×";
+
+  li.append(span, removeBtn);
+  cardList.append(li);
+
+  cardInput.value = "";
+  cardInput.focus();
+  cardStatus.textContent = `Карточка «${titleText}» добавлена.`;
 });
 
-// Задание 3. Назначьте ОДИН обработчик click на list (делегирование).
-// Через event.target.closest(".remove-card") найдите кнопку удаления.
-// Если кнопка есть, удалите её ближайшую .item-card и завершите обработчик.
+cardList.addEventListener("click", (event) => {
+  const removeBtn = event.target.closest(".remove-card");
+  if (removeBtn && cardList.contains(removeBtn)) {
+    const card = removeBtn.closest(".item-card");
+    if (card) {
+      card.remove();
+      cardStatus.textContent = "Карточка удалена.";
+    }
+    return;
+  }
 
-// Задание 4. Если кликнули не по кнопке удаления,
-// найдите event.target.closest(".item-card") и переключите is-active.
+  const card = event.target.closest(".item-card");
+  if (card && cardList.contains(card)) {
+    card.classList.toggle("is-active");
+    cardStatus.textContent = card.classList.contains("is-active")
+      ? "Карточка выделена."
+      : "Выделение снято.";
+  }
+});
+
